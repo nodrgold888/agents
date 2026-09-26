@@ -46,6 +46,20 @@ container — see "Persistence" at the bottom).
   only the repo owner can supply. Once you have one:
   `omniroute setup-claude --api-key <key>` generates Claude Code
   profiles from the live model catalog.
+- **Render deployment**: `render.yaml` at the repo root deploys
+  OmniRoute as a public Render web service instead of running it only
+  inside this container. `REQUIRE_API_KEY=true` stays on (a public URL
+  with no auth would be an open, anyone-can-spend-your-quota gateway),
+  and `JWT_SECRET`/`API_KEY_SECRET`/`INITIAL_PASSWORD` use Render's
+  `generateValue: true` rather than the npm package's hardcoded
+  defaults (same value for every install worldwide - fine loopback-only,
+  not fine public). **Caveat**: Render's default web service disk is
+  ephemeral - provider keys and settings added through the deployed
+  dashboard will not survive a redeploy or restart unless a persistent
+  disk is attached (a paid-plan feature, not set up here). Creating the
+  actual Render service (connecting this repo, picking a plan) has to
+  happen through Render's own dashboard/API with the account owner's
+  credentials - this file only prepares the Blueprint config.
 
 ## freellmapi — free-tier multi-provider LLM router
 
