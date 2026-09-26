@@ -1,6 +1,6 @@
 # Installed agent tooling
 
-This repo has four external agent/dev tools installed, plus the
+This repo has five external agent/dev tools installed, plus the
 `@apollo/space-kit` design system. Notes below cover what each is, how
 it's configured, and how to bring it back up in a fresh environment
 (none of this is state that persists automatically outside a running
@@ -46,6 +46,33 @@ container — see "Persistence" at the bottom).
   only the repo owner can supply. Once you have one:
   `omniroute setup-claude --api-key <key>` generates Claude Code
   profiles from the live model catalog.
+
+## freellmapi — free-tier multi-provider LLM router
+
+- Source cloned to `/home/user/freellmapi-src` (outside this repo — it's
+  a third-party app, not code this repo maintains). Not a Claude Code
+  plugin; it's a self-hosted router aggregating 34+ providers' free
+  tiers into one OpenAI-compatible endpoint.
+- Docker is the documented install path (`curl -fsSL
+  https://freellmapi.co/install.sh | bash`), but the Docker daemon
+  can't run in this sandboxed container (`ulimit: Operation not
+  permitted` — a deliberate restriction, not a bug). Used the npm dev
+  path instead:
+  `bash scripts/dev-bootstrap.sh && npm run dev`
+  (from `/home/user/freellmapi-src`)
+- **Bind host matters**: it defaults to dual-stack `::`, and on a host
+  without IPv6 (like this container) it silently falls back to
+  `0.0.0.0` — all interfaces. Force loopback explicitly by adding
+  `HOST=127.0.0.1` to `/home/user/freellmapi-src/.env`.
+- Server: http://127.0.0.1:3001 (`/api/ping` for health,
+  `/v1/chat/completions` for the OpenAI-compatible endpoint)
+- Dashboard (dev mode): http://127.0.0.1:5173 — add provider keys
+  there, then grab the unified API key from the Keys page.
+- **Not yet wired to route real traffic** — same situation as
+  omniroute: no provider keys added yet, needs the repo owner to add
+  them through the dashboard.
+- `npm audit` reported 13 vulnerabilities (1 low, 6 moderate, 6 high)
+  on install — not triaged, flagging rather than ignoring.
 
 ## @apollo/space-kit
 
