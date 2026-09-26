@@ -1,0 +1,26 @@
+{
+  "name": "agents",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nodrgold888/agents.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nodrgold888/agents/issues"
+  },
+  "homepage": "https://github.com/nodrgold888/agents#readme",
+  "dependencies": {
+    "@apollo/space-kit": "^9.11.0",
+    "@emotion/cache": "^11.14.0",
+    "@emotion/core": "^11.0.0",
+    "framer-motion": "^13.4.4"
+  }
+}
