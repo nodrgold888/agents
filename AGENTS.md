@@ -1,6 +1,6 @@
 # Installed agent tooling
 
-This repo has four external agent/dev tools installed, plus the
+This repo has five external agent/dev tools installed, plus the
 `@apollo/space-kit` design system. Notes below cover what each is, how
 it's configured, and how to bring it back up in a fresh environment
 (none of this is state that persists automatically outside a running
@@ -46,6 +46,47 @@ container — see "Persistence" at the bottom).
   only the repo owner can supply. Once you have one:
   `omniroute setup-claude --api-key <key>` generates Claude Code
   profiles from the live model catalog.
+- **Render deployment**: `render.yaml` at the repo root deploys
+  OmniRoute as a public Render web service instead of running it only
+  inside this container. `REQUIRE_API_KEY=true` stays on (a public URL
+  with no auth would be an open, anyone-can-spend-your-quota gateway),
+  and `JWT_SECRET`/`API_KEY_SECRET`/`INITIAL_PASSWORD` use Render's
+  `generateValue: true` rather than the npm package's hardcoded
+  defaults (same value for every install worldwide - fine loopback-only,
+  not fine public). **Caveat**: Render's default web service disk is
+  ephemeral - provider keys and settings added through the deployed
+  dashboard will not survive a redeploy or restart unless a persistent
+  disk is attached (a paid-plan feature, not set up here). Creating the
+  actual Render service (connecting this repo, picking a plan) has to
+  happen through Render's own dashboard/API with the account owner's
+  credentials - this file only prepares the Blueprint config.
+
+## freellmapi — free-tier multi-provider LLM router
+
+- Source cloned to `/home/user/freellmapi-src` (outside this repo — it's
+  a third-party app, not code this repo maintains). Not a Claude Code
+  plugin; it's a self-hosted router aggregating 34+ providers' free
+  tiers into one OpenAI-compatible endpoint.
+- Docker is the documented install path (`curl -fsSL
+  https://freellmapi.co/install.sh | bash`), but the Docker daemon
+  can't run in this sandboxed container (`ulimit: Operation not
+  permitted` — a deliberate restriction, not a bug). Used the npm dev
+  path instead:
+  `bash scripts/dev-bootstrap.sh && npm run dev`
+  (from `/home/user/freellmapi-src`)
+- **Bind host matters**: it defaults to dual-stack `::`, and on a host
+  without IPv6 (like this container) it silently falls back to
+  `0.0.0.0` — all interfaces. Force loopback explicitly by adding
+  `HOST=127.0.0.1` to `/home/user/freellmapi-src/.env`.
+- Server: http://127.0.0.1:3001 (`/api/ping` for health,
+  `/v1/chat/completions` for the OpenAI-compatible endpoint)
+- Dashboard (dev mode): http://127.0.0.1:5173 — add provider keys
+  there, then grab the unified API key from the Keys page.
+- **Not yet wired to route real traffic** — same situation as
+  omniroute: no provider keys added yet, needs the repo owner to add
+  them through the dashboard.
+- `npm audit` reported 13 vulnerabilities (1 low, 6 moderate, 6 high)
+  on install — not triaged, flagging rather than ignoring.
 
 ## @apollo/space-kit
 
