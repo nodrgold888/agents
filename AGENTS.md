@@ -1,6 +1,6 @@
 # Installed agent tooling
 
-This repo has five external agent/dev tools installed, plus the
+This repo has six external agent/dev tools installed, plus the
 `@apollo/space-kit` design system. Notes below cover what each is, how
 it's configured, and how to bring it back up in a fresh environment
 (none of this is state that persists automatically outside a running
@@ -87,6 +87,30 @@ container — see "Persistence" at the bottom).
   them through the dashboard.
 - `npm audit` reported 13 vulnerabilities (1 low, 6 moderate, 6 high)
   on install — not triaged, flagging rather than ignoring.
+
+## everything-claude-code — plugin bundle (agents/skills/commands/hooks/rules)
+
+- Installed as a Claude Code plugin from the **WorldFlowAI fork**
+  (`WorldFlowAI/everything-claude-code`), not the upstream `affaan-m`
+  repo of the same name — the upstream has since diverged into a much
+  larger, unrelated project ("ECC": 68 agents, 293 skills, Docker). The
+  WorldFlowAI fork is a pinned, much smaller snapshot (7 agents, 9
+  commands, 6 skills, 4 rules, 2 hook groups) with its own setup guide
+  (`WORLDFLOWAI.md`) tailored to their `synapse`/`arbiter` projects.
+  ```
+  claude plugin marketplace add WorldFlowAI/everything-claude-code
+  claude plugin install everything-claude-code@everything-claude-code
+  ```
+- Adds agents (`planner`, `architect`, `tdd-guide`, `code-reviewer`,
+  `security-reviewer`, `build-error-resolver`, `refactor-cleaner`),
+  commands (`/plan`, `/tdd`, `/verify`, `/code-review`, `/build-fix`,
+  `/refactor-clean`, `/checkpoint`, `/learn`, `/setup-pm`), skills
+  (coding-standards, backend-patterns, frontend-patterns, TDD workflow,
+  security review, eval-harness, continuous-learning), and hooks
+  (session memory persistence, strategic-compaction suggestions).
+- Check status: `claude plugin list`
+- Not yet exercised against this repo — the commands/agents above are
+  available next session but haven't been run here.
 
 ## @apollo/space-kit
 
