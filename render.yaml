@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: omniroute
+    env: node
+    buildCommand: npm install -g omniroute
+    startCommand: omniroute
+    envVars:
+      # Public service: bind all interfaces so Render's edge can reach it.
+      - key: OMNIROUTE_SERVER_HOST
+        value: 0.0.0.0
+      # Every /v1/* request still needs an API key - this is what keeps a
+      # public URL from being an open, anyone-can-spend-your-quota gateway.
+      - key: REQUIRE_API_KEY
+        value: "true"
+      # The npm package ships a hardcoded default for each of these three
+      # (same value for every install worldwide) as its fallback .env.
+      # generateValue makes Render mint a unique secret per deploy instead -
+      # required for a public deployment, optional for a loopback-only one.
+      - key: JWT_SECRET
+        generateValue: true
+      - key: API_KEY_SECRET
+        generateValue: true
+      - key: INITIAL_PASSWORD
+        generateValue: true
+    healthCheckPath: /
