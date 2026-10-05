@@ -6,6 +6,29 @@ it's configured, and how to bring it back up in a fresh environment
 (none of this is state that persists automatically outside a running
 container — see "Persistence" at the bottom).
 
+`npm ci && npm test` builds `src/components/TvPanel.jsx` with esbuild and
+smoke-loads the bundle; `.github/workflows/ci.yml` runs this on every PR.
+
+## Status of known gaps
+
+Every caveat below falls into one of three buckets — worth distinguishing,
+since they need different things from whoever picks this repo up next:
+
+- **Inherent to this sandbox, not a bug** — nothing to fix, just work around
+  it: Docker-in-Docker is blocked here (freellmapi), and Render's free plan
+  has no persistent disk (omniroute's deployed dashboard settings).
+- **Blocked on the repo owner, not on code** — real secrets only the account
+  owner can supply: omniroute and freellmapi both have no upstream
+  provider/API-key credentials configured anywhere, local or on Render.
+  These cannot be supplied through chat (credentials pasted into a Claude
+  Code conversation are refused on sight) — they need to be entered directly
+  into the relevant dashboard/`.env`/Render environment settings by the
+  owner.
+- **Was a real gap, now fixed** — the session-start hook's fail-fast bug
+  (a missing `omniroute` binary used to skip headroom's restart too) is
+  fixed as of commit `7b812a5`; the repo had no CI or build step at all
+  until this pass, now covered by `.github/workflows/ci.yml`.
+
 ## claude-mem — persistent memory for Claude Code
 
 - Installed as a Claude Code plugin (`thedotmack/claude-mem`), local
@@ -109,8 +132,9 @@ container — see "Persistence" at the bottom).
   security review, eval-harness, continuous-learning), and hooks
   (session memory persistence, strategic-compaction suggestions).
 - Check status: `claude plugin list`
-- Not yet exercised against this repo — the commands/agents above are
-  available next session but haven't been run here.
+- Exercised once: `/code-review` was run against the shadow-telegram-agent
+  auth/persistence rebuild in this same session as a dogfooding check that
+  the installed tooling actually works, not just installs cleanly.
 
 ## @apollo/space-kit
 
